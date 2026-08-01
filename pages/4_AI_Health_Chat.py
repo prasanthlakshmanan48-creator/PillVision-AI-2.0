@@ -1,5 +1,7 @@
 import streamlit as st
+
 from utils.gemini import health_chat
+from utils.history import add_history
 
 st.set_page_config(
     page_title="AI Health Chat",
@@ -27,13 +29,15 @@ if question:
 
     # Show user message
     st.session_state.messages.append(
-        {"role": "user", "content": question}
+        {
+            "role": "user",
+            "content": question
+        }
     )
 
     with st.chat_message("user"):
         st.markdown(question)
 
-    # AI response
     with st.chat_message("assistant"):
 
         with st.spinner("Thinking..."):
@@ -41,6 +45,13 @@ if question:
             try:
 
                 answer = health_chat(question)
+
+                # Save to History
+                add_history(
+                    "AI Chat",
+                    question,
+                    answer
+                )
 
                 st.markdown(answer)
 
@@ -66,7 +77,7 @@ if st.sidebar.button("🗑 Clear Chat"):
 st.sidebar.markdown("---")
 
 st.sidebar.info("""
-Example Questions
+### Example Questions
 
 • Can I take Dolo 650 after food?
 
