@@ -1,1 +1,9 @@
-
+streamlit>=1.45.0
+google-genai>=1.30.0
+Pillow
+reportlab
+numpy
+easyocr
+opencv-python-headless
+torch
+torchvision
