@@ -1,6 +1,53 @@
 from config import client, MODEL_NAME
 
+# ==========================================
+# Scan Medicine Image
+# ==========================================
+
 def analyze_medicine_image(image):
+
+    prompt = """
+You are an expert pharmacist.
+
+Analyze the uploaded medicine image.
+
+Return the answer in Markdown using these headings:
+
+## 💊 Medicine Name
+
+## 🧪 Active Ingredient
+
+## 🏥 Manufacturer
+
+## 💉 Strength
+
+## 🩺 Uses
+
+## 💊 Typical Dosage
+
+## ⚠️ Common Side Effects
+
+## 🔄 Drug Interactions
+
+## 🤰 Pregnancy Safety
+
+## 🍺 Alcohol Interaction
+
+## 📦 Storage
+
+## 📝 Summary
+
+If you cannot confidently identify the medicine, clearly say so.
+"""
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=[prompt, image]
+    )
+
+    return response.text
+
+
 # ==========================================
 # Medicine Search
 # ==========================================
@@ -14,7 +61,7 @@ Provide accurate information about this medicine:
 
 {name}
 
-Return the answer in Markdown with these headings:
+Return the answer in Markdown using these headings:
 
 ## 💊 Medicine Name
 
@@ -46,47 +93,6 @@ If the medicine cannot be identified confidently, clearly say so.
     response = client.models.generate_content(
         model=MODEL_NAME,
         contents=prompt
-    )
-
-    return response.text
-
-    prompt = """
-You are an expert pharmacist.
-
-Analyze the uploaded medicine image.
-
-Return your answer in this format:
-
-## 💊 Medicine Name
-
-## 🧪 Active Ingredient
-
-## 🏥 Manufacturer
-
-## 💉 Strength
-
-## 🩺 Uses
-
-## 💊 Typical Dosage
-
-## ⚠️ Common Side Effects
-
-## 🔄 Drug Interactions
-
-## 🤰 Pregnancy Safety
-
-## 🍺 Alcohol Interaction
-
-## 📦 Storage
-
-## 📝 Summary
-
-If you cannot confidently identify the medicine, clearly state that.
-"""
-
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=[prompt, image]
     )
 
     return response.text
