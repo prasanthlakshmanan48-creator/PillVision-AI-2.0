@@ -13,22 +13,16 @@ def preprocess_image(image):
     Improve image quality before OCR.
     """
 
-    # Convert PIL Image to NumPy array
     img = np.array(image)
 
-    # Convert RGB to BGR (OpenCV format)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-    # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Reduce noise
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
-    # Increase contrast
     gray = cv2.equalizeHist(gray)
 
-    # Binary threshold
     _, thresh = cv2.threshold(
         gray,
         0,
@@ -57,7 +51,9 @@ def extract_text(image):
 
     text = " ".join(results)
 
-    if text.strip() == "":
+    if not text.strip():
         text = "No readable text detected."
+
+    return text
 
     return text
