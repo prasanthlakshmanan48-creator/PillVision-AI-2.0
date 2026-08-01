@@ -1,3 +1,10 @@
+from utils.dashboard import (
+    total_records,
+    total_scans,
+    total_searches,
+    total_interactions,
+    total_chats
+)
 import streamlit as st
 
 st.set_page_config(
