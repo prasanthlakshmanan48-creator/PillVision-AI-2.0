@@ -108,3 +108,38 @@ Return in Markdown:
     )
 
     return response.text
+ # ==========================================
+# AI Health Chat
+# ==========================================
+
+def health_chat(question):
+
+    prompt = f"""
+You are PillVision AI.
+
+You are a friendly healthcare assistant.
+
+Answer ONLY healthcare and medicine-related questions.
+
+Question:
+{question}
+
+Return your answer in Markdown with these headings:
+
+## 💡 Answer
+
+## 📖 Explanation
+
+## ⚠️ Important Advice
+
+## 👨‍⚕️ When to Consult a Doctor
+
+If the question is not related to healthcare or medicines, politely explain that you can only answer healthcare-related questions.
+"""
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt
+    )
+
+    return response.text
