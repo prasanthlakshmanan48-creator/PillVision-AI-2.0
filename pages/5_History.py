@@ -1,29 +1,39 @@
 import streamlit as st
-from utils.history import get_history, clear_history
+from datetime import datetime
 
-st.set_page_config(
-    page_title="History",
-    page_icon="📚",
-    layout="wide"
-)
+# Add new history record
+def add_history(history_type, title, content):
 
-st.title("📚 Activity History")
+    if "history" not in st.session_state:
+        st.session_state.history = []
 
-st.write("History page loaded successfully.")
+    st.session_state.history.insert(0, {
+        "type": history_type,
+        "title": title,
+        "content": content,
+        "time": datetime.now().strftime("%d-%m-%Y %H:%M")
+    })
 
-history = get_history()
 
-st.write("History object:", history)
+# Get all history
+def get_history():
 
-if len(history) == 0:
-    st.info("No history available yet.")
+    if "history" not in st.session_state:
+        st.session_state.history = []
 
-else:
-    st.success(f"Total Records: {len(history)}")
+    return st.session_state.history
 
-    for item in history:
-        st.write(item)
 
-if st.button("🗑 Clear History"):
-    clear_history()
-    st.rerun()
+# Clear history
+def clear_history():
+
+    st.session_state.history = []
+
+
+# Total records
+def history_count():
+
+    if "history" not in st.session_state:
+        return 0
+
+    return len(st.session_state.history)
