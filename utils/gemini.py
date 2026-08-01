@@ -14,27 +14,16 @@ Analyze the uploaded medicine image.
 Return the answer in Markdown using these headings:
 
 ## 💊 Medicine Name
-
 ## 🧪 Active Ingredient
-
 ## 🏥 Manufacturer
-
 ## 💉 Strength
-
 ## 🩺 Uses
-
 ## 💊 Typical Dosage
-
 ## ⚠️ Common Side Effects
-
 ## 🔄 Drug Interactions
-
 ## 🤰 Pregnancy Safety
-
 ## 🍺 Alcohol Interaction
-
 ## 📦 Storage
-
 ## 📝 Summary
 
 If you cannot confidently identify the medicine, clearly say so.
@@ -53,6 +42,38 @@ If you cannot confidently identify the medicine, clearly say so.
 # ==========================================
 
 def search_medicine(name):
+
+    prompt = f"""
+You are a licensed pharmacist.
+
+Provide detailed information about:
+
+{name}
+
+Return in Markdown with:
+
+## 💊 Medicine Name
+## 🧪 Generic Name
+## 🩺 Uses
+## 💉 Typical Dosage
+## ⚠️ Common Side Effects
+## 🚫 Warnings
+## 🔄 Drug Interactions
+## 🍺 Alcohol Interaction
+## 🤰 Pregnancy
+## 🤱 Breastfeeding
+## 📦 Storage
+## 📝 Summary
+"""
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt
+    )
+
+    return response.text
+
+
 # ==========================================
 # Drug Interaction Checker
 # ==========================================
@@ -64,16 +85,13 @@ You are an experienced clinical pharmacist.
 
 Check the interaction between:
 
-Medicine 1:
-{medicine1}
+Medicine 1: {medicine1}
 
-Medicine 2:
-{medicine2}
+Medicine 2: {medicine2}
 
-Return your answer in Markdown with these headings:
+Return in Markdown:
 
 ## 🚦 Risk Level
-(Low / Moderate / High)
 
 ## 📖 Interaction Summary
 
@@ -82,53 +100,6 @@ Return your answer in Markdown with these headings:
 ## 💊 Recommendation
 
 ## 🚑 When to Consult a Doctor
-
-If there is no known interaction, clearly state that.
-
-If you are uncertain, say you are uncertain instead of guessing.
-"""
-
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt
-    )
-
-    return response.text
-
-    prompt = f"""
-You are a licensed pharmacist.
-
-Provide accurate information about this medicine:
-
-{name}
-
-Return the answer in Markdown using these headings:
-
-## 💊 Medicine Name
-
-## 🧪 Generic Name
-
-## 🩺 Uses
-
-## 💉 Typical Dosage
-
-## ⚠️ Common Side Effects
-
-## 🚫 Warnings
-
-## 🔄 Drug Interactions
-
-## 🍺 Alcohol Interaction
-
-## 🤰 Pregnancy
-
-## 🤱 Breastfeeding
-
-## 📦 Storage
-
-## 📝 Summary
-
-If the medicine cannot be identified confidently, clearly say so.
 """
 
     response = client.models.generate_content(
