@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+import json
 
 from utils.gemini import analyze_medicine_image
 from utils.history import add_history
@@ -36,7 +37,7 @@ if uploaded_file:
 
                 result = analyze_medicine_image(image)
 
-                # Save History
+                # Save history
                 add_history(
                     "Medicine Scan",
                     "Medicine Image",
@@ -45,7 +46,37 @@ if uploaded_file:
 
                 st.success("✅ Analysis Completed")
 
-                st.markdown(result)
+                # Try to display JSON nicely
+                try:
+
+                    data = json.loads(result)
+
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        st.metric("💊 Medicine", data.get("medicine_name", "Unknown"))
+                        st.metric("🧪 Active Ingredient", data.get("active_ingredient", "Unknown"))
+                        st.metric("🏭 Manufacturer", data.get("manufacturer", "Unknown"))
+                        st.metric("💉 Strength", data.get("strength", "Unknown"))
+
+                    with col2:
+                        st.metric("🩺 Uses", data.get("uses", "Unknown"))
+                        st.metric("💊 Dosage", data.get("dosage", "Unknown"))
+                        st.metric("⚠️ Side Effects", data.get("side_effects", "Unknown"))
+                        st.metric("🤰 Pregnancy", data.get("pregnancy", "Unknown"))
+
+                    st.subheader("🔄 Drug Interactions")
+                    st.write(data.get("drug_interactions", "Unknown"))
+
+                    st.subheader("📦 Storage")
+                    st.write(data.get("storage", "Unknown"))
+
+                    st.subheader("📝 Summary")
+                    st.write(data.get("summary", "Unknown"))
+
+                except Exception:
+                    # If Gemini returns Markdown instead of JSON
+                    st.markdown(result)
 
                 # Create PDF
                 pdf = create_pdf(
@@ -56,7 +87,6 @@ if uploaded_file:
 
                 # Download Button
                 with open(pdf, "rb") as file:
-
                     st.download_button(
                         "📄 Download Scan Report",
                         data=file,
@@ -67,5 +97,4 @@ if uploaded_file:
             except Exception as e:
 
                 st.error("❌ Analysis Failed")
-
                 st.exception(e)
