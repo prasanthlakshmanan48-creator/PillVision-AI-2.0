@@ -2,16 +2,10 @@ import easyocr
 import numpy as np
 import cv2
 
-# Load OCR model once
-reader = easyocr.Reader(
-    ['en'],
-    gpu=False
-)
+# Load OCR model only once
+reader = easyocr.Reader(["en"], gpu=False)
 
 def preprocess_image(image):
-    """
-    Improve image quality before OCR.
-    """
 
     img = np.array(image)
 
@@ -19,7 +13,7 @@ def preprocess_image(image):
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    gray = cv2.GaussianBlur(gray, (3,3), 0)
 
     gray = cv2.equalizeHist(gray)
 
@@ -34,26 +28,18 @@ def preprocess_image(image):
 
 
 def extract_text(image):
-    """
-    Extract text from medicine image using OCR.
-    """
 
     processed = preprocess_image(image)
 
-    results = reader.readtext(
+    result = reader.readtext(
         processed,
         detail=0,
-        paragraph=True,
-        text_threshold=0.4,
-        low_text=0.3,
-        link_threshold=0.3
+        paragraph=True
     )
 
-    text = " ".join(results)
+    text = " ".join(result)
 
-    if not text.strip():
-        text = "No readable text detected."
-
-    return text
+    if text.strip()=="":
+        text="No readable text detected."
 
     return text
