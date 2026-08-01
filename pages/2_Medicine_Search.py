@@ -2,6 +2,7 @@ import streamlit as st
 
 from utils.gemini import search_medicine
 from utils.history import add_history
+from utils.pdf import create_pdf
 
 st.set_page_config(
     page_title="Medicine Search",
@@ -31,7 +32,7 @@ if st.button("🔍 Search"):
 
                 result = search_medicine(medicine)
 
-                # Save to History
+                # Save History
                 add_history(
                     "Medicine Search",
                     medicine,
@@ -41,6 +42,23 @@ if st.button("🔍 Search"):
                 st.success("✅ Search Completed")
 
                 st.markdown(result)
+
+                # Create PDF
+                pdf = create_pdf(
+                    "Medicine Search Report",
+                    result,
+                    "medicine_report.pdf"
+                )
+
+                # Download Button
+                with open(pdf, "rb") as file:
+
+                    st.download_button(
+                        "📄 Download PDF",
+                        data=file,
+                        file_name="Medicine_Report.pdf",
+                        mime="application/pdf"
+                    )
 
             except Exception as e:
 
