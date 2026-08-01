@@ -1,4 +1,6 @@
 import streamlit as st
+from PIL import Image
+from utils.gemini import analyze_medicine_image
 
 st.set_page_config(
     page_title="Scan Medicine",
@@ -8,23 +10,35 @@ st.set_page_config(
 
 st.title("💊 Scan Medicine")
 
-st.write("Upload a medicine image to analyze.")
-
 uploaded_file = st.file_uploader(
-    "Choose an image",
-    type=["jpg", "jpeg", "png"]
+    "Upload Medicine Image",
+    type=["jpg","jpeg","png"]
 )
 
-if uploaded_file is not None:
+if uploaded_file:
+
+    image = Image.open(uploaded_file)
 
     st.image(
-        uploaded_file,
+        image,
         caption="Uploaded Medicine",
         use_container_width=True
     )
 
-    if st.button("Analyze Medicine"):
+    if st.button("🔍 Analyze Medicine"):
 
-        st.success("✅ Image uploaded successfully!")
+        with st.spinner("Analyzing..."):
 
-        st.info("Gemini AI integration will be added in the next step.")
+            try:
+
+                result = analyze_medicine_image(image)
+
+                st.success("Analysis Completed")
+
+                st.markdown(result)
+
+            except Exception as e:
+
+                st.error("Analysis Failed")
+
+                st.exception(e)
