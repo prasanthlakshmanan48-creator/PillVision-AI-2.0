@@ -1,5 +1,7 @@
 import streamlit as st
+
 from utils.gemini import search_medicine
+from utils.history import add_history
 
 st.set_page_config(
     page_title="Medicine Search",
@@ -29,12 +31,19 @@ if st.button("🔍 Search"):
 
                 result = search_medicine(medicine)
 
-                st.success("Search Completed")
+                # Save to History
+                add_history(
+                    "Medicine Search",
+                    medicine,
+                    result
+                )
+
+                st.success("✅ Search Completed")
 
                 st.markdown(result)
 
             except Exception as e:
 
-                st.error("Search Failed")
+                st.error("❌ Search Failed")
 
                 st.exception(e)
