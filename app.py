@@ -10,4 +10,18 @@ st.title("💊 PillVision AI")
 
 st.success("Welcome to PillVision AI!")
 
-st.write("If you can see this page, the deployment is working correctly.")
+st.write("""
+This application uses AI to:
+
+✅ Scan Medicine
+
+✅ Search Medicine
+
+✅ Check Drug Interactions
+
+✅ AI Health Chat
+
+✅ Generate PDF Reports
+""")
+
+st.info("👈 More features will appear in the sidebar after we add pages.")
