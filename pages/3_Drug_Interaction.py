@@ -1,5 +1,7 @@
 import streamlit as st
+
 from utils.gemini import drug_interaction
+from utils.history import add_history
 
 st.set_page_config(
     page_title="Drug Interaction Checker",
@@ -36,14 +38,24 @@ if st.button("🔍 Check Interaction", use_container_width=True):
 
             try:
 
-                result = drug_interaction(medicine1, medicine2)
+                result = drug_interaction(
+                    medicine1,
+                    medicine2
+                )
 
-                st.success("Analysis Completed")
+                # Save to History
+                add_history(
+                    "Drug Interaction",
+                    f"{medicine1} + {medicine2}",
+                    result
+                )
+
+                st.success("✅ Analysis Completed")
 
                 st.markdown(result)
 
             except Exception as e:
 
-                st.error("Unable to analyze interaction.")
+                st.error("❌ Unable to analyze interaction.")
 
                 st.exception(e)
