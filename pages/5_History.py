@@ -1,53 +1,39 @@
 import streamlit as st
-from utils.history import get_history, clear_history
+from datetime import datetime
 
-st.set_page_config(
-    page_title="History",
-    page_icon="📚",
-    layout="wide"
-)
+# Add new history record
+def add_history(history_type, title, content):
 
-st.title("📚 Activity History")
+    if "history" not in st.session_state:
+        st.session_state.history = []
 
-history = get_history()
+    st.session_state.history.insert(0, {
+        "type": history_type,
+        "title": title,
+        "content": content,
+        "time": datetime.now().strftime("%d-%m-%Y %H:%M")
+    })
 
-if len(history) == 0:
-    st.info("No history available yet.")
 
-else:
+# Get all history
+def get_history():
 
-    st.success(f"Total Records: {len(history)}")
+    if "history" not in st.session_state:
+        st.session_state.history = []
 
-    search = st.text_input(
-        "🔍 Search History",
-        placeholder="Search by medicine or chat..."
-    )
+    return st.session_state.history
 
-    st.markdown("---")
 
-    for item in history:
+# Clear history
+def clear_history():
 
-        if search:
-            if (
-                search.lower() not in item["title"].lower()
-                and search.lower() not in item["type"].lower()
-            ):
-                continue
+    st.session_state.history = []
 
-        with st.expander(
-            f"{item['type']} | {item['time']}"
-        ):
 
-            st.subheader(item["title"])
+# Total records
+def history_count():
 
-            st.markdown(item["content"])
+    if "history" not in st.session_state:
+        return 0
 
-st.markdown("---")
-
-if st.button("🗑 Clear History", use_container_width=True):
-
-    clear_history()
-
-    st.success("History Cleared")
-
-    st.rerun()
+    return len(st.session_state.history)
