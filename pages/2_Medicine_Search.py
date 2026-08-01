@@ -12,103 +12,57 @@ st.set_page_config(
 
 st.title("🔍 AI Medicine Search")
 
-st.write("Search detailed information about any medicine.")
-
-st.markdown("---")
+st.write("Search any medicine by its name.")
 
 medicine = st.text_input(
-    "💊 Enter Medicine Name",
-    placeholder="Example: Dolo 650"
+    "Medicine Name",
+    placeholder="Example: Paracetamol"
 )
 
-search = st.button(
-    "🔍 Search Medicine",
-    use_container_width=True
-)
-
-if search:
+if st.button("🔍 Search"):
 
     if medicine.strip() == "":
         st.warning("Please enter a medicine name.")
 
     else:
 
-        with st.spinner("Searching medicine database..."):
+        with st.spinner("Searching..."):
 
             try:
 
                 result = search_medicine(medicine)
 
+                # Save History
                 add_history(
                     "Medicine Search",
                     medicine,
                     result
                 )
 
-                st.success("Medicine Found")
+                st.success("✅ Search Completed")
 
+                # Display Result
                 st.markdown(result)
 
-                st.markdown("---")
-
+                # Create PDF
                 pdf = create_pdf(
                     "Medicine Search Report",
                     result,
-                    "medicine_search_report.pdf"
+                    "medicine_report.pdf"
                 )
 
+                # Download Button
                 with open(pdf, "rb") as file:
 
                     st.download_button(
-                        "📄 Download Report",
+                        "📄 Download PDF",
                         data=file,
-                        file_name="Medicine_Search_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
+                        file_name="Medicine_Report.pdf",
+                        mime="application/pdf"
                     )
 
             except Exception as e:
 
-                st.error("Unable to search medicine.")
+                st.error("❌ Search Failed")
 
                 st.exception(e)
-
-st.markdown("---")
-
-st.subheader("💡 Popular Medicines")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("Dolo 650"):
-        st.session_state["quick_search"] = "Dolo 650"
-
-with col2:
-    if st.button("Paracetamol"):
-        st.session_state["quick_search"] = "Paracetamol"
-
-with col3:
-    if st.button("Azithromycin"):
-        st.session_state["quick_search"] = "Azithromycin"
-
-if "quick_search" in st.session_state:
-
-    with st.spinner("Loading medicine..."):
-
-        try:
-
-            result = search_medicine(
-                st.session_state["quick_search"]
-            )
-
-            st.success(
-                f"Result for {st.session_state['quick_search']}"
-            )
-
-            st.markdown(result)
-
-        except Exception as e:
-
-            st.error("Search failed.")
-
-            st.exception(e)
