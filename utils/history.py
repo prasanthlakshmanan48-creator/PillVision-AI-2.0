@@ -1,36 +1,30 @@
 from datetime import datetime
 from database import conn, cursor
 
-
 def add_history(history_type, title, content):
 
-    cursor.execute(
-        """
-        INSERT INTO history(type,title,content,time)
-        VALUES(?,?,?,?)
-        """,
-        (
-            history_type,
-            title,
-            content,
-            datetime.now().strftime("%d-%m-%Y %H:%M")
-        )
-    )
+    cursor.execute("""
+    INSERT INTO history(type,title,content,time)
+    VALUES(?,?,?,?)
+    """,(
+        history_type,
+        title,
+        content,
+        datetime.now().strftime("%d-%m-%Y %H:%M")
+    ))
 
     conn.commit()
 
 
 def get_history():
 
-    cursor.execute(
-        """
-        SELECT type,title,content,time
-        FROM history
-        ORDER BY id DESC
-        """
-    )
+    cursor.execute("""
+    SELECT type,title,content,time
+    FROM history
+    ORDER BY id DESC
+    """)
 
-    rows = cursor.fetchall()
+    rows=cursor.fetchall()
 
     history=[]
 
