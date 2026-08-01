@@ -1,49 +1,46 @@
 from config import client, MODEL_NAME
 from utils.ocr import extract_text
+
 # ==========================================
 # Scan Medicine Image
 # ==========================================
 
 def analyze_medicine_image(image):
 
+    # Extract text using OCR
     ocr_text = extract_text(image)
 
     prompt = f"""
 You are an expert pharmacist.
 
-OCR detected this text:
-
+OCR Text:
 {ocr_text}
 
-Use BOTH the uploaded medicine image AND the OCR text.
+Analyze BOTH the uploaded medicine image and the OCR text.
 
-Identify the medicine and provide:
+Return ONLY valid JSON.
 
-## 💊 Medicine Name
+The JSON format must be EXACTLY like this:
 
-## 🧪 Active Ingredient
+{{
+    "medicine_name": "",
+    "active_ingredient": "",
+    "manufacturer": "",
+    "strength": "",
+    "uses": "",
+    "dosage": "",
+    "side_effects": "",
+    "drug_interactions": "",
+    "pregnancy": "",
+    "storage": "",
+    "summary": ""
+}}
 
-## 🏥 Manufacturer
-
-## 💉 Strength
-
-## 🩺 Uses
-
-## 💊 Dosage
-
-## ⚠️ Side Effects
-
-## 🔄 Drug Interactions
-
-## 🤰 Pregnancy Safety
-
-## 🍺 Alcohol Interaction
-
-## 📦 Storage
-
-## 📝 Summary
-
-If you are uncertain, clearly mention it.
+Rules:
+- Return ONLY JSON.
+- Do NOT use Markdown.
+- Do NOT use code blocks.
+- If you are not confident, write "Unknown".
 """
 
     response = client.models.generate_content(
@@ -70,16 +67,27 @@ Provide detailed information about:
 Return in Markdown with:
 
 ## 💊 Medicine Name
+
 ## 🧪 Generic Name
+
 ## 🩺 Uses
+
 ## 💉 Typical Dosage
+
 ## ⚠️ Common Side Effects
+
 ## 🚫 Warnings
+
 ## 🔄 Drug Interactions
+
 ## 🍺 Alcohol Interaction
+
 ## 🤰 Pregnancy
+
 ## 🤱 Breastfeeding
+
 ## 📦 Storage
+
 ## 📝 Summary
 """
 
@@ -102,9 +110,11 @@ You are an experienced clinical pharmacist.
 
 Check the interaction between:
 
-Medicine 1: {medicine1}
+Medicine 1:
+{medicine1}
 
-Medicine 2: {medicine2}
+Medicine 2:
+{medicine2}
 
 Return in Markdown:
 
@@ -125,7 +135,9 @@ Return in Markdown:
     )
 
     return response.text
- # ==========================================
+
+
+# ==========================================
 # AI Health Chat
 # ==========================================
 
