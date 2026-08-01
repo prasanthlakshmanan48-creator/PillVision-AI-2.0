@@ -1,6 +1,8 @@
 import streamlit as st
 from PIL import Image
+
 from utils.gemini import analyze_medicine_image
+from utils.history import add_history
 
 st.set_page_config(
     page_title="Scan Medicine",
@@ -12,7 +14,7 @@ st.title("💊 Scan Medicine")
 
 uploaded_file = st.file_uploader(
     "Upload Medicine Image",
-    type=["jpg","jpeg","png"]
+    type=["jpg", "jpeg", "png"]
 )
 
 if uploaded_file:
@@ -33,12 +35,19 @@ if uploaded_file:
 
                 result = analyze_medicine_image(image)
 
-                st.success("Analysis Completed")
+                # Save to History
+                add_history(
+                    "Medicine Scan",
+                    "Medicine Image",
+                    result
+                )
+
+                st.success("✅ Analysis Completed")
 
                 st.markdown(result)
 
             except Exception as e:
 
-                st.error("Analysis Failed")
+                st.error("❌ Analysis Failed")
 
                 st.exception(e)
