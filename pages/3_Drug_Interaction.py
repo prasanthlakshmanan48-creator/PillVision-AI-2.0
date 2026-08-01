@@ -14,14 +14,12 @@ st.title("⚠️ Drug Interaction Checker")
 
 st.write("Check whether two medicines are safe to take together.")
 
-st.markdown("---")
-
 col1, col2 = st.columns(2)
 
 with col1:
     medicine1 = st.text_input(
         "💊 Medicine 1",
-        placeholder="Example: Dolo 650"
+        placeholder="Example: Paracetamol"
     )
 
 with col2:
@@ -30,24 +28,18 @@ with col2:
         placeholder="Example: Ibuprofen"
     )
 
-if st.button(
-    "🔍 Check Interaction",
-    use_container_width=True
-):
+if st.button("🔍 Check Interaction", use_container_width=True):
 
     if medicine1.strip() == "" or medicine2.strip() == "":
         st.warning("Please enter both medicine names.")
 
     else:
 
-        with st.spinner("Analyzing drug interaction..."):
+        with st.spinner("Analyzing interaction..."):
 
             try:
 
-                result = drug_interaction(
-                    medicine1,
-                    medicine2
-                )
+                result = drug_interaction(medicine1, medicine2)
 
                 # Save History
                 add_history(
@@ -58,25 +50,24 @@ if st.button(
 
                 st.success("✅ Analysis Completed")
 
+                # Display Result
                 st.markdown(result)
 
-                st.markdown("---")
-
-                # PDF Report
+                # Create PDF
                 pdf = create_pdf(
                     "Drug Interaction Report",
                     result,
-                    "drug_interaction_report.pdf"
+                    "interaction_report.pdf"
                 )
 
+                # Download PDF
                 with open(pdf, "rb") as file:
 
                     st.download_button(
-                        "📄 Download Interaction Report",
+                        "📄 Download PDF",
                         data=file,
                         file_name="Drug_Interaction_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
+                        mime="application/pdf"
                     )
 
             except Exception as e:
@@ -84,55 +75,3 @@ if st.button(
                 st.error("❌ Unable to analyze interaction.")
 
                 st.exception(e)
-
-st.markdown("---")
-
-st.subheader("💡 Quick Examples")
-
-c1, c2, c3 = st.columns(3)
-
-with c1:
-    if st.button("Dolo 650 + Ibuprofen"):
-        st.session_state["example1"] = (
-            "Dolo 650",
-            "Ibuprofen"
-        )
-
-with c2:
-    if st.button("Paracetamol + Cetirizine"):
-        st.session_state["example2"] = (
-            "Paracetamol",
-            "Cetirizine"
-        )
-
-with c3:
-    if st.button("Metformin + Insulin"):
-        st.session_state["example3"] = (
-            "Metformin",
-            "Insulin"
-        )
-
-example = None
-
-if "example1" in st.session_state:
-    example = st.session_state.pop("example1")
-
-elif "example2" in st.session_state:
-    example = st.session_state.pop("example2")
-
-elif "example3" in st.session_state:
-    example = st.session_state.pop("example3")
-
-if example:
-
-    with st.spinner("Checking example..."):
-
-        try:
-
-            result = drug_interaction(
-                example[0],
-                example[1]
-            )
-
-            st.success(
-                f"Example
