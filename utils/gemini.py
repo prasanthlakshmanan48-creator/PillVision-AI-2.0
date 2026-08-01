@@ -7,48 +7,73 @@ from utils.ocr import extract_text
 
 def analyze_medicine_image(image):
 
-    # Extract text using OCR
-    ocr_text = extract_text(image)
+    try:
 
-    prompt = f"""
+        ocr_text = extract_text(image)
+
+        prompt = f"""
 You are an expert pharmacist.
 
-OCR Text:
+OCR detected text:
+
 {ocr_text}
 
 Analyze BOTH the uploaded medicine image and the OCR text.
 
+Identify the medicine.
+
 Return ONLY valid JSON.
 
-The JSON format must be EXACTLY like this:
+JSON format:
 
 {{
-    "medicine_name": "",
-    "active_ingredient": "",
-    "manufacturer": "",
-    "strength": "",
-    "uses": "",
-    "dosage": "",
-    "side_effects": "",
-    "drug_interactions": "",
-    "pregnancy": "",
-    "storage": "",
-    "summary": ""
+  "medicine_name":"",
+  "active_ingredient":"",
+  "manufacturer":"",
+  "strength":"",
+  "uses":"",
+  "dosage":"",
+  "side_effects":"",
+  "drug_interactions":"",
+  "pregnancy":"",
+  "alcohol_interaction":"",
+  "storage":"",
+  "summary":""
 }}
 
 Rules:
+
 - Return ONLY JSON.
-- Do NOT use Markdown.
-- Do NOT use code blocks.
-- If you are not confident, write "Unknown".
+- No Markdown.
+- No explanation.
+- If unknown, write "Unknown".
 """
 
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=[prompt, image]
-    )
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=[prompt, image]
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+
+        return f"""
+{{
+"medicine_name":"Error",
+"active_ingredient":"Unknown",
+"manufacturer":"Unknown",
+"strength":"Unknown",
+"uses":"Unknown",
+"dosage":"Unknown",
+"side_effects":"Unknown",
+"drug_interactions":"Unknown",
+"pregnancy":"Unknown",
+"alcohol_interaction":"Unknown",
+"storage":"Unknown",
+"summary":"{str(e)}"
+}}
+"""
 
 
 # ==========================================
@@ -58,23 +83,27 @@ Rules:
 def search_medicine(name):
 
     prompt = f"""
-You are a licensed pharmacist.
+You are an expert pharmacist.
 
-Provide detailed information about:
+Medicine:
 
 {name}
 
-Return in Markdown with:
+Provide accurate information.
+
+Return in Markdown.
 
 ## 💊 Medicine Name
 
 ## 🧪 Generic Name
 
+## 🏭 Manufacturer
+
 ## 🩺 Uses
 
-## 💉 Typical Dosage
+## 💉 Dosage
 
-## ⚠️ Common Side Effects
+## ⚠️ Side Effects
 
 ## 🚫 Warnings
 
@@ -88,6 +117,8 @@ Return in Markdown with:
 
 ## 📦 Storage
 
+## 💰 Approximate Price
+
 ## 📝 Summary
 """
 
@@ -100,15 +131,13 @@ Return in Markdown with:
 
 
 # ==========================================
-# Drug Interaction Checker
+# Drug Interaction
 # ==========================================
 
 def drug_interaction(medicine1, medicine2):
 
     prompt = f"""
-You are an experienced clinical pharmacist.
-
-Check the interaction between:
+You are a clinical pharmacist.
 
 Medicine 1:
 {medicine1}
@@ -116,17 +145,19 @@ Medicine 1:
 Medicine 2:
 {medicine2}
 
-Return in Markdown:
+Return in Markdown.
 
 ## 🚦 Risk Level
 
-## 📖 Interaction Summary
+(Low / Moderate / High)
 
-## ⚠️ Possible Side Effects
+## 📖 Interaction
+
+## ⚠️ Possible Effects
 
 ## 💊 Recommendation
 
-## 🚑 When to Consult a Doctor
+## 🚑 When to Consult Doctor
 """
 
     response = client.models.generate_content(
@@ -146,14 +177,13 @@ def health_chat(question):
     prompt = f"""
 You are PillVision AI.
 
-You are a friendly healthcare assistant.
-
-Answer ONLY healthcare and medicine-related questions.
+Answer ONLY medicine and healthcare questions.
 
 Question:
+
 {question}
 
-Return your answer in Markdown with these headings:
+Return in Markdown.
 
 ## 💡 Answer
 
@@ -161,9 +191,10 @@ Return your answer in Markdown with these headings:
 
 ## ⚠️ Important Advice
 
-## 👨‍⚕️ When to Consult a Doctor
+## 👨‍⚕️ When to See a Doctor
 
-If the question is not related to healthcare or medicines, politely explain that you can only answer healthcare-related questions.
+If the question is unrelated to healthcare,
+politely refuse.
 """
 
     response = client.models.generate_content(
