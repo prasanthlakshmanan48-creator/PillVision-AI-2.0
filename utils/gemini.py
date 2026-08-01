@@ -1,32 +1,49 @@
 from config import client, MODEL_NAME
-
+from utils.ocr import extract_text
 # ==========================================
 # Scan Medicine Image
 # ==========================================
 
 def analyze_medicine_image(image):
 
-    prompt = """
+    ocr_text = extract_text(image)
+
+    prompt = f"""
 You are an expert pharmacist.
 
-Analyze the uploaded medicine image.
+OCR detected this text:
 
-Return the answer in Markdown using these headings:
+{ocr_text}
+
+Use BOTH the uploaded medicine image AND the OCR text.
+
+Identify the medicine and provide:
 
 ## 💊 Medicine Name
+
 ## 🧪 Active Ingredient
+
 ## 🏥 Manufacturer
+
 ## 💉 Strength
+
 ## 🩺 Uses
-## 💊 Typical Dosage
-## ⚠️ Common Side Effects
+
+## 💊 Dosage
+
+## ⚠️ Side Effects
+
 ## 🔄 Drug Interactions
+
 ## 🤰 Pregnancy Safety
+
 ## 🍺 Alcohol Interaction
+
 ## 📦 Storage
+
 ## 📝 Summary
 
-If you cannot confidently identify the medicine, clearly say so.
+If you are uncertain, clearly mention it.
 """
 
     response = client.models.generate_content(
