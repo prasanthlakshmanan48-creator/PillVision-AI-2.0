@@ -3,52 +3,30 @@ from reportlab.platypus import (
     Paragraph,
     Spacer
 )
+
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.colors import HexColor
-from reportlab.lib.units import inch
 
-styles = getSampleStyleSheet()
+styles=getSampleStyleSheet()
 
-title_style = styles["Heading1"]
-title_style.alignment = TA_CENTER
-title_style.textColor = HexColor("#1565C0")
+def create_pdf(title,content,filename):
 
-heading_style = styles["Heading2"]
-heading_style.textColor = HexColor("#1565C0")
+    pdf=SimpleDocTemplate(filename)
 
-normal_style = styles["BodyText"]
+    story=[]
 
+    story.append(
+        Paragraph(title,styles["Heading1"])
+    )
 
-def create_pdf(title, content, filename):
-
-    pdf = SimpleDocTemplate(filename)
-
-    story = []
-
-    story.append(Paragraph("💊 PillVision AI", title_style))
-    story.append(Spacer(1, 0.2 * inch))
-
-    story.append(Paragraph(title, heading_style))
-    story.append(Spacer(1, 0.15 * inch))
+    story.append(
+        Spacer(1,20)
+    )
 
     for line in content.split("\n"):
 
-        if line.strip() != "":
-            story.append(
-                Paragraph(line, normal_style)
-            )
-
-    story.append(Spacer(1, 0.3 * inch))
-
-    story.append(
-        Paragraph(
-            "<b>Disclaimer:</b> "
-            "This report is AI-generated and intended for educational purposes only. "
-            "Always consult a qualified healthcare professional before taking any medication.",
-            normal_style
+        story.append(
+            Paragraph(line,styles["BodyText"])
         )
-    )
 
     pdf.build(story)
 
