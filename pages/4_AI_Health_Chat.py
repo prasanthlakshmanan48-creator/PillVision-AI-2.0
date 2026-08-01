@@ -10,35 +10,21 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("💬 PillVision AI Health Assistant")
+st.title("💬 AI Health Chat")
 
-st.write(
-    "Ask medicine and healthcare-related questions."
-)
+st.write("Ask medicine or healthcare-related questions.")
 
-st.markdown("---")
-
-# ======================================
-# Session Chat History
-# ======================================
-
+# Store conversation
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display previous conversation
+# Display previous messages
 for message in st.session_state.messages:
-
     with st.chat_message(message["role"]):
-
         st.markdown(message["content"])
 
-# ======================================
-# User Input
-# ======================================
-
-question = st.chat_input(
-    "Ask your healthcare question..."
-)
+# User input
+question = st.chat_input("Type your question here...")
 
 if question:
 
@@ -51,10 +37,9 @@ if question:
     )
 
     with st.chat_message("user"):
-
         st.markdown(question)
 
-    # AI Response
+    # AI response
     with st.chat_message("assistant"):
 
         with st.spinner("Thinking..."):
@@ -63,7 +48,7 @@ if question:
 
                 answer = health_chat(question)
 
-                # Save to SQLite history
+                # Save to History
                 add_history(
                     "AI Chat",
                     question,
@@ -72,7 +57,7 @@ if question:
 
                 st.markdown(answer)
 
-                # Store response
+                # Store assistant response
                 st.session_state.messages.append(
                     {
                         "role": "assistant",
@@ -80,51 +65,46 @@ if question:
                     }
                 )
 
-                st.markdown("---")
-
                 # Create PDF
                 pdf = create_pdf(
-                    "AI Health Chat Report",
+                    "AI Chat Report",
                     answer,
-                    "ai_chat_report.pdf"
+                    "chat_report.pdf"
                 )
 
+                # Download PDF
                 with open(pdf, "rb") as file:
 
                     st.download_button(
-                        "📄 Download Last Response",
+                        "📄 Download Chat PDF",
                         data=file,
-                        file_name="AI_Health_Chat_Report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
+                        file_name="AI_Chat_Report.pdf",
+                        mime="application/pdf"
                     )
 
             except Exception as e:
 
-                st.error("Unable to generate response.")
+                st.error("Unable to get response.")
 
                 st.exception(e)
 
-# ======================================
 # Sidebar
-# ======================================
-
-st.sidebar.header("⚙️ Chat Options")
+st.sidebar.header("Options")
 
 if st.sidebar.button("🗑 Clear Chat"):
-
     st.session_state.messages = []
-
     st.rerun()
 
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("💡 Example Questions")
+st.sidebar.info("""
+### Example Questions
 
-examples = [
-    "Can I take Dolo 650 after food?",
-    "Is Paracetamol safe during pregnancy?",
-    "Can I take Ibuprofen with alcohol?",
-    "What are the side effects of Cetirizine?",
-    "What should I do if I miss a dose of antibiotics?",
-    "Can diabet
+• Can I take Dolo 650 after food?
+
+• Is Paracetamol safe during pregnancy?
+
+• Can I take Ibuprofen with alcohol?
+
+• What are the side effects of Cetirizine?
+""")
