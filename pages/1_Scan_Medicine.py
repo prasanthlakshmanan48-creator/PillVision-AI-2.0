@@ -3,6 +3,7 @@ from PIL import Image
 
 from utils.gemini import analyze_medicine_image
 from utils.history import add_history
+from utils.pdf import create_pdf
 
 st.set_page_config(
     page_title="Scan Medicine",
@@ -35,7 +36,7 @@ if uploaded_file:
 
                 result = analyze_medicine_image(image)
 
-                # Save to History
+                # Save History
                 add_history(
                     "Medicine Scan",
                     "Medicine Image",
@@ -45,6 +46,23 @@ if uploaded_file:
                 st.success("✅ Analysis Completed")
 
                 st.markdown(result)
+
+                # Create PDF
+                pdf = create_pdf(
+                    "Medicine Scan Report",
+                    result,
+                    "medicine_scan.pdf"
+                )
+
+                # Download Button
+                with open(pdf, "rb") as file:
+
+                    st.download_button(
+                        "📄 Download Scan Report",
+                        data=file,
+                        file_name="Medicine_Scan_Report.pdf",
+                        mime="application/pdf"
+                    )
 
             except Exception as e:
 
