@@ -1,6 +1,54 @@
 from config import client, MODEL_NAME
 
 def analyze_medicine_image(image):
+# ==========================================
+# Medicine Search
+# ==========================================
+
+def search_medicine(name):
+
+    prompt = f"""
+You are a licensed pharmacist.
+
+Provide accurate information about this medicine:
+
+{name}
+
+Return the answer in Markdown with these headings:
+
+## 💊 Medicine Name
+
+## 🧪 Generic Name
+
+## 🩺 Uses
+
+## 💉 Typical Dosage
+
+## ⚠️ Common Side Effects
+
+## 🚫 Warnings
+
+## 🔄 Drug Interactions
+
+## 🍺 Alcohol Interaction
+
+## 🤰 Pregnancy
+
+## 🤱 Breastfeeding
+
+## 📦 Storage
+
+## 📝 Summary
+
+If the medicine cannot be identified confidently, clearly say so.
+"""
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt
+    )
+
+    return response.text
 
     prompt = """
 You are an expert pharmacist.
